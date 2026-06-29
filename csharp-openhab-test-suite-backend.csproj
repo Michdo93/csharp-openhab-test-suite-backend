@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>OpenHABTestSuiteBackend</RootNamespace>
+    <AssemblyName>OpenHABTestSuiteBackend</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CSharpOpenHABRestClient" Version="1.0.0" />
+    <PackageReference Include="CSharpOpenHABTestSuite"  Version="1.0.0" />
+  </ItemGroup>
+
+</Project>
