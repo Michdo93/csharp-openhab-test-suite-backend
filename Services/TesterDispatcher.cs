@@ -127,29 +127,27 @@ public class TesterDispatcher
         {
             if (target == typeof(string))
                 return je.ValueKind == JsonValueKind.Null ? null : je.ToString();
-            if (target == typeof(bool)   || target == typeof(bool?))
+            if (target == typeof(bool)   || target == typeof(Nullable<bool>))
                 return je.ValueKind == JsonValueKind.True;
-            if (target == typeof(int)    || target == typeof(int?))
+            if (target == typeof(int)    || target == typeof(Nullable<int>))
                 return je.TryGetInt32(out var i32) ? i32 : 0;
-            if (target == typeof(long)   || target == typeof(long?))
+            if (target == typeof(long)   || target == typeof(Nullable<long>))
                 return je.TryGetInt64(out var i64) ? i64 : 0L;
-            if (target == typeof(double) || target == typeof(double?))
+            if (target == typeof(double) || target == typeof(Nullable<double>))
                 return je.TryGetDouble(out var d) ? d : 0.0;
-            if (target == typeof(string?))
-                return je.ValueKind == JsonValueKind.Null ? null : je.ToString();
             return je.ToString();
         }
 
         // Primitive conversions
-        if (target == typeof(string)  || target == typeof(string?))
+        if (target == typeof(string))
             return val.ToString();
-        if (target == typeof(bool)    || target == typeof(bool?))
+        if (target == typeof(bool)    || target == typeof(Nullable<bool>))
             return val is bool b ? b : bool.Parse(val.ToString()!);
-        if (target == typeof(int)     || target == typeof(int?))
+        if (target == typeof(int)     || target == typeof(Nullable<int>))
             return val is int i ? i : Convert.ToInt32(val);
-        if (target == typeof(long)    || target == typeof(long?))
+        if (target == typeof(long)    || target == typeof(Nullable<long>))
             return val is long l ? l : Convert.ToInt64(val);
-        if (target == typeof(double)  || target == typeof(double?))
+        if (target == typeof(double)  || target == typeof(Nullable<double>))
             return val is double d ? d : Convert.ToDouble(val);
 
         return val;
