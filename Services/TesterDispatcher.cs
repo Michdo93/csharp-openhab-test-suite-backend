@@ -20,7 +20,17 @@ public class TesterDispatcher
     {
         if (string.IsNullOrWhiteSpace(url))
             throw new ArgumentException("url is required");
-        var base_ = url.TrimEnd('/');
+
+        // Ensure an explicit protocol prefix is present.
+        // Without it, a bare host like "192.168.0.5:8080" is not a valid
+        // absolute URI and HttpClient will throw a UriFormatException.
+        var base_ = url.Trim().TrimEnd('/');
+        if (!base_.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
+            !base_.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        {
+            base_ = "http://" + base_;
+        }
+
         return !string.IsNullOrWhiteSpace(token)
             ? new OpenHABClient(base_, token: token)
             : new OpenHABClient(base_, username, password);
