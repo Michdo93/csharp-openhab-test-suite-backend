@@ -78,7 +78,7 @@ public class TestController : ControllerBase
         catch (MissingMethodException)
         {
             return BadRequest(
-                new { error = $"Method '{req.Method}' not found on {req.Tester}" });
+                new { error = $"Method '{req.Method}' (or '{char.ToUpperInvariant(req.Method[0])}{req.Method[1..]}') not found on {req.Tester}" });
         }
         catch (ArgumentException e)
         {

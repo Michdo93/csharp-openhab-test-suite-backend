@@ -96,12 +96,23 @@ public class TesterDispatcher
 
     private static MethodInfo? FindMethod(Type type, string name, int arity)
     {
-        // Exact arity first
-        foreach (var m in type.GetMethods(BindingFlags.Public | BindingFlags.Instance))
-            if (m.Name == name && m.GetParameters().Length == arity) return m;
+        // The frontend sends camelCase names (doesItemExist, testSwitch) to
+        // match the Python/Java/Node naming convention, but C# methods are
+        // PascalCase (DoesItemExist, TestSwitch). Convert automatically.
+        var pascal = char.ToUpperInvariant(name[0]) + name[1..];
+
+        // Try PascalCase first (exact arity), then camelCase as fallback
+        foreach (var candidate in new[] { pascal, name })
+        {
+            foreach (var m in type.GetMethods(BindingFlags.Public | BindingFlags.Instance))
+                if (m.Name == candidate && m.GetParameters().Length == arity) return m;
+        }
         // Then methods with optional parameters covering the arity
-        foreach (var m in type.GetMethods(BindingFlags.Public | BindingFlags.Instance))
-            if (m.Name == name && m.GetParameters().Length >= arity) return m;
+        foreach (var candidate in new[] { pascal, name })
+        {
+            foreach (var m in type.GetMethods(BindingFlags.Public | BindingFlags.Instance))
+                if (m.Name == candidate && m.GetParameters().Length >= arity) return m;
+        }
         return null;
     }
 
