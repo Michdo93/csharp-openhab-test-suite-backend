@@ -1,5 +1,5 @@
 // Backend of the csharp-openhab-test-suite test app: runs the testers of
-// csharp-openhab-test-suite 2.0.0 on behalf of the browser.
+// csharp-openhab-test-suite 2.0.1 on behalf of the browser.
 //
 //   GET  /              health check (wake-up on Render)
 //   POST /api/connect   {url, token | username+password}
@@ -37,7 +37,7 @@ OpenHABClient Client(JsonObject b)
 
 app.MapGet("/", () => Json(new JsonObject
 {
-    ["status"] = "ok", ["service"] = "csharp-openhab-test-suite-backend", ["version"] = "2.0.0",
+    ["status"] = "ok", ["service"] = "csharp-openhab-test-suite-backend", ["version"] = "2.0.1",
 }));
 
 app.MapPost("/api/connect", async (HttpRequest req) =>

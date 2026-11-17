@@ -2,12 +2,12 @@
 
 HTTP backend for the [csharp-openhab-test-suite test app](https://github.com/Michdo93/csharp-openhab-test-suite-test-app):
 a browser cannot run .NET, so this small ASP.NET Core server runs the testers of
-[csharp-openhab-test-suite](https://github.com/Michdo93/csharp-openhab-test-suite) 2.0.0 on its behalf.
+[csharp-openhab-test-suite](https://github.com/Michdo93/csharp-openhab-test-suite) 2.0.1 on its behalf.
 All tester methods are available (found by reflection).
 
 | Method | Path | Body | Answer |
 |---|---|---|---|
-| `GET` | `/` | – | `{"status":"ok","service":"csharp-openhab-test-suite-backend","version":"2.0.0"}` |
+| `GET` | `/` | – | `{"status":"ok","service":"csharp-openhab-test-suite-backend","version":"2.0.1"}` |
 | `POST` | `/api/connect` | `{url, token}` or `{url, username, password}` | `{loggedIn, isCloud, url}` |
 | `POST` | `/api/test` | `{url, token, tester, method, params: [...]}` | `{result, output}` |
 
