@@ -1,64 +1,48 @@
 # csharp-openhab-test-suite-backend
 
-Stateless ASP.NET Core 8 backend for the
-[csharp-openhab-test-suite](https://github.com/Michdo93/csharp-openhab-test-suite)
-web frontend.
+HTTP backend for the [csharp-openhab-test-suite test app](https://github.com/Michdo93/csharp-openhab-test-suite-test-app):
+a browser cannot run .NET, so this small ASP.NET Core server runs the testers of
+[csharp-openhab-test-suite](https://github.com/Michdo93/csharp-openhab-test-suite) 2.0.0 on its behalf.
+All tester methods are available (found by reflection).
 
-Every request carries credentials in the body — no session state is stored.
-
-## Endpoints
-
-| Method | Path | Description |
-|---|---|---|
-| `GET` | `/` | Health check / wake-up |
-| `POST` | `/api/connect` | Verify credentials → `{ loggedIn, isCloud }` |
-| `POST` | `/api/test` | Run a tester method → `{ result, output }` |
-
-### `POST /api/test`
+| Method | Path | Body | Answer |
+|---|---|---|---|
+| `GET` | `/` | – | `{"status":"ok","service":"csharp-openhab-test-suite-backend","version":"2.0.0"}` |
+| `POST` | `/api/connect` | `{url, token}` or `{url, username, password}` | `{loggedIn, isCloud, url}` |
+| `POST` | `/api/test` | `{url, token, tester, method, params: [...]}` | `{result, output}` |
 
 ```json
 {
-  "url":      "https://myopenhab.org",
-  "username": "user@example.com",
-  "password": "secret",
-  "tester":   "ItemTester",
-  "method":   "TestSwitch",
-  "params":   ["MySwitch", "ON", "ON", 10]
+  "url": "http://openhab:8080", "token": "oh.xxx",
+  "tester": "ItemTester", "method": "TestDimmer",
+  "params": ["Wohnzimmer_Dimmer", "30", ["30", "30.0"], 5]
 }
 ```
 
-Available testers: `ItemTester`, `ThingTester`, `RuleTester`,
-`ChannelTester`, `PersistenceTester`, `SitemapTester`.
-
-## NuGet Dependencies
-
-- `CSharpOpenHABRestClient` 1.0.0 — NuGet
-- `CSharpOpenHABTestSuite` 1.0.0 — NuGet
-
-Both must be published to NuGet before building the Docker image.
-
-## Local development
-
-```bash
-dotnet run
-# → http://localhost:8080
+```json
+{"result": true, "output": "Success: 'Wohnzimmer_Dimmer' reached state '30'."}
 ```
 
-## Docker
+`params` are positional; method names in C# (`TestDimmer`) or Python spelling (`testDimmer`).
+The `Test…` methods take `[itemName, command, expectedState, timeout]`; `expectedState` may be
+a list of accepted states (`ExpectedState`). `result` is `true`/`false`, for
+`GetGroupMembers`, `GetLinksForItem` and `GetRuleStatus` JSON, for `GetThingStatus` a string.
+`output` holds the messages of the testers (`TestLog.Handler`).
+
+Testers: `ItemTester`, `ThingTester`, `RuleTester`, `ChannelTester`, `PersistenceTester`,
+`SitemapTester`. The backend keeps no credentials; they come with every request. Tests run one
+after another.
+
+## Build and run
 
 ```bash
-docker build -t csharp-openhab-test-suite-backend .
-docker run -p 8080:8080 csharp-openhab-test-suite-backend
+dotnet run -c Release                  # PORT=8080 by default
 ```
 
-## Deploy on Render.com
-
-1. Publish `CSharpOpenHABRestClient` and `CSharpOpenHABTestSuite` to NuGet.
-2. Push this repository to GitHub.
-3. **New → Web Service → Docker → Frankfurt → Free → PORT=8080 → Deploy**.
-
-Live URL: `https://csharp-openhab-test-suite-backend.onrender.com`
+Requirements: .NET 10 SDK. Docker: `docker build -t csharp-openhab-test-suite-backend .` –
+`render.yaml` deploys it on Render (Frankfurt, free plan):
+`https://csharp-openhab-test-suite-backend.onrender.com`.
 
 ## License
 
-MIT License
+MIT – Michael Christian Dörflinger
